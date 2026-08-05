@@ -75,10 +75,60 @@ X_representative_digit  =x_train[representative_digit_idx]
 
 X_representative_digit
 
-y_representative_digits=np.argmax(X_representative_digit,axis=1)
+
+
+import matplotlib.pyplot as plt
+
+plt.figure(figsize=(12, 6))
+
+for i, image in enumerate(X_representative_digit):
+    plt.subplot(5, 10, i + 1)
+    plt.imshow(image.reshape(8, 8), cmap="binary")
+    plt.axis("off")
+    plt.title(i)
+
+plt.tight_layout()
+plt.show()
+
+y_representative_digits=np.array([4,8,9,0,5,6,1,2,7,5,9,4,6,1,3,1,1,0,9,7,7,1,6,1,8,3,4,5,4,2,1,4,3,3,0,4,4,5,4,5,1,3,7,5,8,8,6,9,9,4])
 
 log_reg=LogisticRegression()
 log_reg.fit(X_representative_digit,y_representative_digits)
+
+log_reg.score(x_test,y_test)
+
+log_reg=LogisticRegression()
+log_reg.fit(X_representative_digit,y_representative_digits)
+
+log_reg.score(x_test,y_test)
+
+y_train_propogated=np.empty(len(x_train),dtype=np.int32)
+
+x_train_cluster_labels = kmeans.predict(x_train)
+for i in range (k):
+  y_train_propogated[x_train_cluster_labels==i]=y_representative_digits[i]
+
+log_reg=LogisticRegression()
+log_reg.fit(x_train,y_train_propogated)
+
+log_reg.score(x_test,y_test)
+
+percentile_closest=20
+
+X_cluster_dist=X_digit_dist[np.arange(len(x_train)),x_train_cluster_labels]
+for i in range(k):
+  in_cluster=(x_train_cluster_labels==i)
+  cluster_dist=X_cluster_dist[in_cluster]
+  cutoff_distance=np.percentile(cluster_dist,percentile_closest)
+  above_cutoff=(X_cluster_dist>cutoff_distance)
+  X_cluster_dist[in_cluster & above_cutoff]=-1
+
+partially_propagated=(X_cluster_dist!=-1)
+x_train_partially_propagated=x_train[partially_propagated]
+y_train_partially_propagated=y_train_propogated[partially_propagated]
+
+log_reg=LogisticRegression()
+log_reg.fit(x_train_partially_propagated,y_train_partially_propagated)
 
 log_reg.score(x_test,y_test)
 
