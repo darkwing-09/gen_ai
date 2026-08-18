@@ -4,7 +4,7 @@ import pandas as pd
 import joblib
 
 # Load the saved pipeline once
-pipeline = joblib.load('/home/darkwing/Desktop/Gen_AI/ML/projects/models/bike_demand_pipeline.pkl')
+pipeline = joblib.load('/home/darkwing/Desktop/ML/projects/models/bike_demand_pipeline.pkl')
 
 st.title("Bike Rental Demand Predictor")
 st.write("Enter the conditions below to predict how many bikes will be rented this hour.")
